@@ -30,18 +30,19 @@ BasicGame.Game = function (game) {
 	var explosions;
 	var btnFire;
 	var inGame;
-
+	var weapons;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
 
+		weapons = [];
 		this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'planetbg');
 		 //Leaving this here. We shouldn't be scaling by a hard coded numerical value like below.
 		//this.background.scale.setTo(this.background.width/this.game.width, this.background.width/this.game.width);
 		this.background.scale.setTo(2,2);
-        
+
 		//place the star sprites on the screen
 		var star1 = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'stars1');
 		var star2 = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'stars2');
@@ -51,8 +52,8 @@ BasicGame.Game.prototype = {
 		star2.scale.setTo(2,2);
 
 		//Make the stars move down a different velocities. This is called "parallax scrolling background."It gives the scrolling background the illusion of depth.
-		star1.autoScroll(0, 200);
-        star2.autoScroll(0, 50);
+		star1.autoScroll(0, 50);
+        star2.autoScroll(0, 200);
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
 		
 		var size = 64;
@@ -69,10 +70,10 @@ BasicGame.Game.prototype = {
 	
 	//set up inputs
 	cursors = this.game.input.keyboard.createCursorKeys();
-	btnFire = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+	btnFire = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
 	
 	//testing death by pressing spacebar. Adding a callback and passing it this as context.
-	btnFire.onDown.add(boom,this);
+	//btnFire.onDown.add(boom,this);
 
 	//  We need to enable physics on the player
 	this.game.physics.arcade.enable(player);
@@ -82,6 +83,12 @@ BasicGame.Game.prototype = {
 	explosions.createMultiple(30, 'died');
 	explosions.forEach(setupInvader, this);
 
+
+
+	//add weapons
+	//weapons.push(new Weapon.SingleBullet(this.game));
+	weapons.push(new Weapon.SingleLevel(this.game));
+	weapons[0].levelUp(5);
     },
 
     update: function () {
@@ -91,26 +98,31 @@ BasicGame.Game.prototype = {
 		//  Reset the players velocity (movement)
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
-
-	if (cursors.left.isDown)
+	
+	if (cursors.left.isDown && player.body.center.x > 0)
 	{
 		//  Move to the left
 		player.body.velocity.x = -150;
 	}
-	else if (cursors.right.isDown)
+	else if (cursors.right.isDown && player.body.center.x < this.game.world.width)
 	{
 		//  Move to the right
 		player.body.velocity.x = 150;
 	}
-	else if (cursors.up.isDown)
+	else if (cursors.up.isDown && player.body.center.y > 0)
 	{
 		//  Move to the right
 		player.body.velocity.y = -150;
 	}
-	else if (cursors.down.isDown)
+	else if (cursors.down.isDown && player.body.center.y < this.game.world.height)
 	{
 		//  Move to the right
 		player.body.velocity.y = 150;
+	}
+
+	if(btnFire.isDown)
+	{
+		weapons[0].fire(player);
 	}
     },
 
