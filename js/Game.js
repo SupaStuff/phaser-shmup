@@ -88,7 +88,7 @@ BasicGame.Game.prototype = {
 	//add weapons
 	//weapons.push(new Weapon.SingleBullet(this.game));
 	weapons.push(new Weapon.SingleLevel(this.game));
-	weapons[0].levelUp(5);
+	weapons[0].levelUp(6);
     },
 
     update: function () {

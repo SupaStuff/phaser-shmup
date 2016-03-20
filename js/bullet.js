@@ -119,8 +119,8 @@ var Bullet = function (game, key) {
 
     Weapon.SingleLevel.prototype.fire = function (source) {
 
-		var spacing = 5;
-		var dev = spacing * (this.shots/2);
+		var spacing = 10;
+		var dev = spacing * (this.shots/2 - 0.5);
 		for(var i=0; i<this.shots; i+=2)
 		{
 			if(i == this.shots-1)
@@ -133,6 +133,7 @@ var Bullet = function (game, key) {
 				this.shotArray[i].fire({x: source.x+dev, y: source.y});
 				this.shotArray[i+1].fire({x: source.x-dev, y: source.y});
 				dev -= spacing;
+				//if(this.shots-i <=3) dev /= 2;
 			}
 		}
         //this.weapon1.fire({x: source.x+10, y: source.y});
