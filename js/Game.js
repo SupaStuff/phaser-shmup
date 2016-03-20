@@ -19,6 +19,7 @@ BasicGame.Game = function (game) {
     this.particles; //  the particle manager (Phaser.Particles)
     this.physics;   //  the physics manager (Phaser.Physics)
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
+	this.swipe;
 
 
     //  You can use any of these from any function within this State.
@@ -31,11 +32,14 @@ BasicGame.Game = function (game) {
 	var btnFire;
 	var inGame;
 	var weapons;
+	var dir;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
+
+		this.swipe = new Swipe(this.game);
 
 		weapons = [];
 		this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'planetbg');
@@ -89,16 +93,33 @@ BasicGame.Game.prototype = {
 	//weapons.push(new Weapon.SingleBullet(this.game));
 	weapons.push(new Weapon.SingleLevel(this.game));
 	weapons[0].levelUp(6);
-    },
+
+	},
 
     update: function () {
 
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
 		//play();
 		//  Reset the players velocity (movement)
+		
 	player.body.velocity.x = 0;
 	player.body.velocity.y = 0;
 	
+	dir = this.swipe.check();
+	if(dir != null) {
+		console.log(dir);
+		dir = dir.direction;
+		if(((dir & this.swipe.DIRECTION_UP) === this.swipe.DIRECTION_UP) && (player.body.center.y > 0))
+			player.body.velocity.y = -150;
+		else if(((dir & this.swipe.DIRECTION_DOWN) === this.swipe.DIRECTION_DOWN) && (player.body.center.y < this.game.world.height))
+			player.body.velocity.y = 150;
+
+		if(((dir & this.swipe.DIRECTION_LEFT) === this.swipe.DIRECTION_LEFT) && (player.body.center.x > 0))
+			player.body.velocity.x = -150;
+		else if(((dir & this.swipe.DIRECTION_RIGHT) === this.swipe.DIRECTION_RIGHT) && (player.body.center.x < this.game.world.width))
+			player.body.velocity.x = 150;
+	}
+	/*
 	if (cursors.left.isDown && player.body.center.x > 0)
 	{
 		//  Move to the left
@@ -119,8 +140,9 @@ BasicGame.Game.prototype = {
 		//  Move to the right
 		player.body.velocity.y = 150;
 	}
+	*/
 
-	if(btnFire.isDown)
+	if(btnFire.isDown || this.game.input.activePointer.isDown)
 	{
 		weapons[0].fire(player);
 	}
