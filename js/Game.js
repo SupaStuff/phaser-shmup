@@ -19,7 +19,7 @@ BasicGame.Game = function (game) {
     this.particles; //  the particle manager (Phaser.Particles)
     this.physics;   //  the physics manager (Phaser.Physics)
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
-	this.swipe;
+	//this.swipe;
 
 
     //  You can use any of these from any function within this State.
@@ -33,13 +33,16 @@ BasicGame.Game = function (game) {
 	var inGame;
 	var weapons;
 	var dir;
+	var inTouch;
+
+	//var Swipe = require('phaser-swipe');
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
 
-		this.swipe = new Swipe(this.game);
+		//this.swipe = new Swipe(this.game);
 
 		weapons = [];
 		this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'planetbg');
@@ -102,11 +105,28 @@ BasicGame.Game.prototype = {
 		//play();
 		//  Reset the players velocity (movement)
 		
-	player.body.velocity.x = 0;
-	player.body.velocity.y = 0;
-	
-	dir = this.swipe.check();
-	if(dir != null) {
+		this.game.debug.pointer(this.game.input.mousePointer);
+    	this.game.debug.pointer(this.game.input.pointer1);
+
+		player.body.velocity.x = 0;
+		player.body.velocity.y = 0;
+
+		if(!this.game.input.activePointer.isDown)
+		{
+			inTouch = null;
+			dir = null;
+		}
+		else
+		{
+			if(inTouch === null) inTouch = {x: this.game.input.activePointer.x, y: this.game.input.activePointer.y};
+			dir = {x: 10*(this.game.input.activePointer.x - inTouch.x), y: 10*(this.game.input.activePointer.y - inTouch.y)};
+			inTouch = {x: this.game.input.activePointer.x, y: this.game.input.activePointer.y};
+		}
+
+
+	//dir = this.swipe.check();
+	/*
+	if(dir !== null) {
 		console.log(dir);
 		dir = dir.direction;
 		if(((dir & this.swipe.DIRECTION_UP) === this.swipe.DIRECTION_UP) && (player.body.center.y > 0))
@@ -119,33 +139,49 @@ BasicGame.Game.prototype = {
 		else if(((dir & this.swipe.DIRECTION_RIGHT) === this.swipe.DIRECTION_RIGHT) && (player.body.center.x < this.game.world.width))
 			player.body.velocity.x = 150;
 	}
-	/*
-	if (cursors.left.isDown && player.body.center.x > 0)
-	{
-		//  Move to the left
-		player.body.velocity.x = -150;
-	}
-	else if (cursors.right.isDown && player.body.center.x < this.game.world.width)
-	{
-		//  Move to the right
-		player.body.velocity.x = 150;
-	}
-	else if (cursors.up.isDown && player.body.center.y > 0)
-	{
-		//  Move to the right
-		player.body.velocity.y = -150;
-	}
-	else if (cursors.down.isDown && player.body.center.y < this.game.world.height)
-	{
-		//  Move to the right
-		player.body.velocity.y = 150;
-	}
 	*/
+	///*
+		if(dir === null)
+		{
+			if (cursors.left.isDown && player.body.center.x > 0)
+			{
+				//  Move to the left
+				player.body.velocity.x = -150;
+			}
+			else if (cursors.right.isDown && player.body.center.x < this.game.world.width)
+			{
+				//  Move to the right
+				player.body.velocity.x = 150;
+			}
+		
+			if (cursors.up.isDown && player.body.center.y > 0)
+			{
+				//  Move to the right
+				player.body.velocity.y = -150;
+			}
+			else if (cursors.down.isDown && player.body.center.y < this.game.world.height)
+			{
+				//  Move to the right
+				player.body.velocity.y = 150;
+			}
+		}
+		else
+		{
+			player.body.velocity.x = dir.x;
+			player.body.velocity.y = dir.y;
+			
+			if(player.body.center.x < 0) player.position.x = 0;
+			else if(player.body.center.x > this.game.world.width) player.position.x = this.game.world.width;
+			if(player.body.center.y < 0) player.position.y = 0;
+			else if(player.body.center.y > this.game.world.height) player.position.y = this.game.world.height;
 
-	if(btnFire.isDown || this.game.input.activePointer.isDown)
-	{
-		weapons[0].fire(player);
-	}
+		}
+	//*/
+
+		if(btnFire.isDown || this.game.input.activePointer.isDown)
+		{
+			weapons[0].fire(player);
+		}
     },
 
     quitGame: function (pointer) {
