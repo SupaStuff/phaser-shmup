@@ -34,6 +34,7 @@ BasicGame.Game = function (game) {
 	var weapons;
 	var dir;
 	var inTouch;
+	var touchMultiplier;
 
 	//var Swipe = require('phaser-swipe');
 };
@@ -97,6 +98,7 @@ BasicGame.Game.prototype = {
 	weapons.push(new Weapon.SingleLevel(this.game));
 	weapons[0].levelUp(6);
 
+	touchMultiplier = 100;
 	},
 
     update: function () {
@@ -119,7 +121,7 @@ BasicGame.Game.prototype = {
 		else
 		{
 			if(inTouch === null) inTouch = {x: this.game.input.activePointer.x, y: this.game.input.activePointer.y};
-			dir = {x: 10*(this.game.input.activePointer.x - inTouch.x), y: 10*(this.game.input.activePointer.y - inTouch.y)};
+			dir = {x: touchMultiplier*(this.game.input.activePointer.x - inTouch.x), y: touchMultiplier*(this.game.input.activePointer.y - inTouch.y)};
 			inTouch = {x: this.game.input.activePointer.x, y: this.game.input.activePointer.y};
 		}
 
