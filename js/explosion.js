@@ -19,6 +19,7 @@ function spawnBaddy()
 	this.game.physics.arcade.enable(baddy);
 	baddy.body.immovable = true;
 	baddy.body.velocity.y=15;
+	baddy.movementPath = [];
 	baddies.add(baddy);
 }
 
