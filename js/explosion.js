@@ -1,3 +1,25 @@
+function suicide(player, badguy)
+{
+	console.log("suicide");
+}
+
+function death(player, bullet)
+{
+}
+
+function damage(bullet, baddy)
+{
+	bullet.kill();
+	console.log("takatakataka");
+}
+
+
+
+
+
+
+
+
 //copied this from space invaaders example
 
 function boom (){

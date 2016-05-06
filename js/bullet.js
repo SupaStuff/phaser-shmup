@@ -1,6 +1,6 @@
 var Weapon = {};
 
-var Bullet = function (game, key) {
+var Bullet = function (game, key, group) {
 
         Phaser.Sprite.call(this, game, 0, 0, key);
 
@@ -14,7 +14,8 @@ var Bullet = function (game, key) {
 
         this.tracking = false;
         this.scaleSpeed = 0;
-
+		game.physics.arcade.enable(this);
+		group.add(this);
     };
 
     Bullet.prototype = Object.create(Phaser.Sprite.prototype);
@@ -50,19 +51,20 @@ var Bullet = function (game, key) {
         }
 
     };
+	
 
-
-    Weapon.SingleBullet = function (game) {
+    Weapon.SingleBullet = function (game, group) {
 
         Phaser.Group.call(this, game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE);
 
         this.nextFire = 0;
         this.bulletSpeed = 600;
         this.fireRate = 100;
+		this.group = group;
 
         for (var i = 0; i < 64; i++)
         {
-            this.add(new Bullet(game, 'bullet5'), true);
+            this.add(new Bullet(game, 'bullet5', group), true);
         }
 
         return this;
@@ -89,14 +91,17 @@ var Bullet = function (game, key) {
 
 // A weapon with adjustable levels
 
-    Weapon.SingleLevel = function (game) {
-
+    Weapon.SingleLevel = function (game, group) {
+		//Phaser.Group.call(this, game, game.world, 'Single Level', false, true, Phaser.Physics.ARCADE);
         this.name = "Normal Shots";
 		this.shots = 1;
 		this.shotArray = [];
-		for(var i=0; i<this.shots; i++) this.shotArray.push(new Weapon.SingleBullet(game));
+		for(var i=0; i<this.shots; i++) this.shotArray.push(new Weapon.SingleBullet(game, group));
         //this.weapon2 = new Weapon.SingleBullet(game);
     };
+	//Weapon.SingleLevel.prototype = Object.create(Phaser.Group.prototype);
+    //Weapon.SingleLevel.prototype.constructor = Weapon.SingleLevel;
+
 
     Weapon.SingleLevel.prototype.reset = function () {
 
@@ -144,7 +149,7 @@ var Bullet = function (game, key) {
 	Weapon.SingleLevel.prototype.levelUp = function (newLevel) {
 		var oldLevel = this.shotArray.length;
 		this.shots = newLevel;
-
-		for(var i=0; i < newLevel-oldLevel; i++) this.shotArray.push(new Weapon.SingleBullet(this.shotArray[0].game));
+		console.log(this.shotArray[0]);
+		for(var i=0; i < newLevel-oldLevel; i++) this.shotArray.push(new Weapon.SingleBullet(this.shotArray[0].game, this.shotArray[0].group));
 		//this.reset();
 	};

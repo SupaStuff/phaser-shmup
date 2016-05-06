@@ -39,7 +39,9 @@ BasicGame.Preloader.prototype = {
 		this.game.load.image('stars1', imgdir+'stars1.png');
 		this.game.load.image('stars2', imgdir+'stars2.png');
 		this.load.image('bullet5', imgdir+'bullet5.png');
-
+		
+		//baddies
+		this.game.load.image('baddy', imgdir+'pegasus.gif');
 	},
 
 	create: function () {

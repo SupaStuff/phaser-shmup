@@ -35,6 +35,10 @@ BasicGame.Game = function (game) {
 	var dir;
 	var inTouch;
 	var touchMultiplier;
+	var pBullet;
+	var eBullet;
+	var baddies;
+	var baddy;
 
 	//var Swipe = require('phaser-swipe');
 };
@@ -44,6 +48,7 @@ BasicGame.Game.prototype = {
     create: function () {
 
 		//this.swipe = new Swipe(this.game);
+
 
 		weapons = [];
 		this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'planetbg');
@@ -74,7 +79,7 @@ BasicGame.Game.prototype = {
 	player = this.game.add.sprite(this.game.world.centerX, this.game.world.height - size/2, 'ship');
 	player.scale.setTo(size/player.width, size/player.height);
 	player.anchor.setTo(0.5, 0.5);
-
+	
 	
 	//set up inputs
 	cursors = this.game.input.keyboard.createCursorKeys();
@@ -85,6 +90,9 @@ BasicGame.Game.prototype = {
 
 	//  We need to enable physics on the player
 	this.game.physics.arcade.enable(player);
+	player.body.setSize(8,8,4,4);
+	player.body.collideWorldBounds = true;
+
 
 	//  An explosion pool
 	explosions = this.game.add.group();
@@ -93,12 +101,34 @@ BasicGame.Game.prototype = {
 
 
 
+	
+		pBullet = this.game.add.physicsGroup();
 	//add weapons
 	//weapons.push(new Weapon.SingleBullet(this.game));
-	weapons.push(new Weapon.SingleLevel(this.game));
+	weapons.push(new Weapon.SingleLevel(this.game, pBullet));
 	weapons[0].levelUp(6);
 
-	touchMultiplier = 100;
+	//pBullet.add(weapons);
+	touchMultiplier = 50;
+
+	baddy = this.game.add.sprite(this.game.world.centerX, 0, 'baddy');
+
+	//var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false, wordWrapWidth: baddy.width, align: "center", backgroundColor: "#000000" };
+
+    //var text = this.game.add.text(0, 0, ":p", style);
+    //text.anchor.set(0.5);
+
+	
+	this.game.physics.arcade.enable(baddy);
+	
+		eBullet = this.game.add.physicsGroup();
+		baddies = this.game.add.physicsGroup();
+	//this.game.physics.arcade.enable(weapons[0]);
+	baddy.body.velocity.y=15;
+	baddies.add(baddy);
+	console.log(baddy);
+	console.log(baddies);
+	//pBullet.add(weapons[0]);
 	},
 
     update: function () {
@@ -107,8 +137,8 @@ BasicGame.Game.prototype = {
 		//play();
 		//  Reset the players velocity (movement)
 		
-		this.game.debug.pointer(this.game.input.mousePointer);
-    	this.game.debug.pointer(this.game.input.pointer1);
+		//this.game.debug.pointer(this.game.input.mousePointer);
+    	//this.game.debug.pointer(this.game.input.pointer1);
 
 		player.body.velocity.x = 0;
 		player.body.velocity.y = 0;
@@ -145,23 +175,23 @@ BasicGame.Game.prototype = {
 	///*
 		if(dir === null)
 		{
-			if (cursors.left.isDown && player.body.center.x > 0)
+			if (cursors.left.isDown)// && player.body.center.x > 0)
 			{
 				//  Move to the left
 				player.body.velocity.x = -150;
 			}
-			else if (cursors.right.isDown && player.body.center.x < this.game.world.width)
+			else if (cursors.right.isDown)// && player.body.center.x < this.game.world.width)
 			{
 				//  Move to the right
 				player.body.velocity.x = 150;
 			}
 		
-			if (cursors.up.isDown && player.body.center.y > 0)
+			if (cursors.up.isDown)// && player.body.center.y > 0)
 			{
 				//  Move to the right
 				player.body.velocity.y = -150;
 			}
-			else if (cursors.down.isDown && player.body.center.y < this.game.world.height)
+			else if (cursors.down.isDown)// && player.body.center.y < this.game.world.height)
 			{
 				//  Move to the right
 				player.body.velocity.y = 150;
@@ -184,6 +214,14 @@ BasicGame.Game.prototype = {
 		{
 			weapons[0].fire(player);
 		}
+
+
+		//Collisions
+		this.game.physics.arcade.collide(player, baddies, suicide, null);
+		this.game.physics.arcade.collide(player, eBullet, death, null);
+		this.game.physics.arcade.collide(pBullet, baddies, damage, null);
+
+		//if()
     },
 
     quitGame: function (pointer) {
