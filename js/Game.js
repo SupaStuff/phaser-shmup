@@ -38,7 +38,8 @@ BasicGame.Game = function (game) {
 	var pBullet;
 	var eBullet;
 	var baddies;
-	var baddy;
+	var pathIndex;
+	var paths;
 
 	//var Swipe = require('phaser-swipe');
 };
@@ -49,6 +50,7 @@ BasicGame.Game.prototype = {
 
 		//this.swipe = new Swipe(this.game);
 
+		pathIndex = 0;
 
 		weapons = [];
 		this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'planetbg');
@@ -111,23 +113,34 @@ BasicGame.Game.prototype = {
 	//pBullet.add(weapons);
 	touchMultiplier = 50;
 
-	baddy = this.game.add.sprite(this.game.world.centerX, 0, 'baddy');
 
 	//var style = { font: "32px Arial", fill: "#ff0044", wordWrap: false, wordWrapWidth: baddy.width, align: "center", backgroundColor: "#000000" };
 
     //var text = this.game.add.text(0, 0, ":p", style);
     //text.anchor.set(0.5);
+	//
+	
+	
+	//phaser.io/waveforms is the bomb
+	paths = [null,{"type":2,"closed":false,"x":[0,128,256,384,512,640],"y":[146,101,324,57,427,57]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[82,144,139,205,305,301]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[358,218,203,261,236,400]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[133,236,55,212,35,231]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[216,179,382,361,309,212]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[423,189,123,365,202,112]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[262,376,316,200,368,179]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[56,150,51,369,303,257]}]
 
 	
-	this.game.physics.arcade.enable(baddy);
+		baddies = this.game.add.physicsGroup();
+
+	//var baddy = this.game.add.sprite(this.game.world.centerX, 0, 'baddy');
+	//this.game.physics.arcade.enable(baddy);
+	//baddy.body.immovable = true;
+	//baddy.body.velocity.y=15;
+	//baddies.add(baddy);
+	//
+	//every second spawn a bad guy
+	this.game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, spawnBaddy, this);
+	
 	
 		eBullet = this.game.add.physicsGroup();
-		baddies = this.game.add.physicsGroup();
 	//this.game.physics.arcade.enable(weapons[0]);
-	baddy.body.velocity.y=15;
-	baddies.add(baddy);
-	console.log(baddy);
-	console.log(baddies);
+	//console.log(baddy);
+	//console.log(baddies);
 	//pBullet.add(weapons[0]);
 	},
 

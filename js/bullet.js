@@ -35,6 +35,8 @@ var Bullet = function (game, key, group) {
 
         this.body.gravity.set(gx, gy);
 
+		this.z=0;
+
     };
 
     Bullet.prototype.update = function () {

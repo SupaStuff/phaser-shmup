@@ -1,6 +1,6 @@
 function suicide(player, badguy)
 {
-	console.log("suicide");
+	enemyHitsPlayer(player, player.game.world.centerX, player.game.world.height);
 }
 
 function death(player, bullet)
@@ -13,7 +13,14 @@ function damage(bullet, baddy)
 	console.log("takatakataka");
 }
 
-
+function spawnBaddy()
+{
+	var baddy = this.game.add.sprite(this.game.world.centerX, 0, 'baddy');
+	this.game.physics.arcade.enable(baddy);
+	baddy.body.immovable = true;
+	baddy.body.velocity.y=15;
+	baddies.add(baddy);
+}
 
 
 
@@ -22,7 +29,7 @@ function damage(bullet, baddy)
 
 //copied this from space invaaders example
 
-function boom (){
+function suicidal (){
 	enemyHitsPlayer(player, this.game.world.centerX, this.game.world.height);
 }
 
