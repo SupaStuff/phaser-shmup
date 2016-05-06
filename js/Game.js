@@ -37,6 +37,8 @@ BasicGame.Game = function (game) {
 	var touchMultiplier;
 	var pBullet;
 	var eBullet;
+	
+	
 	var baddies;
 	var pathIndex;
 	var paths;
@@ -50,7 +52,11 @@ BasicGame.Game.prototype = {
 
 		//this.swipe = new Swipe(this.game);
 
-		pathIndex = 0;
+		this.pathIndex = 0;
+		
+	//phaser.io/waveforms is the bomb
+	this.paths = [null,{"type":2,"closed":false,"x":[0,128,256,384,512,1280],"y":[146,101,324,57,427,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[82,144,139,205,305,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[358,218,203,261,236,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[133,236,55,212,35,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[216,179,382,361,309,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[423,189,123,365,202,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[262,376,316,200,368,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[56,150,51,369,303,800]}]
+
 
 		weapons = [];
 		this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'planetbg');
@@ -105,11 +111,14 @@ BasicGame.Game.prototype = {
 
 	
 		pBullet = this.game.add.physicsGroup();
+		pBullet.enableBody = true;
+    	pBullet.physicsBodyType = Phaser.Physics.ARCADE;
 	//add weapons
 	//weapons.push(new Weapon.SingleBullet(this.game));
 	weapons.push(new Weapon.SingleLevel(this.game, pBullet));
 	weapons[0].levelUp(6);
 
+	console.log(pBullet);
 	//pBullet.add(weapons);
 	touchMultiplier = 50;
 
@@ -118,12 +127,6 @@ BasicGame.Game.prototype = {
 
     //var text = this.game.add.text(0, 0, ":p", style);
     //text.anchor.set(0.5);
-	//
-	
-	
-	//phaser.io/waveforms is the bomb
-	paths = [null,{"type":2,"closed":false,"x":[0,128,256,384,512,640],"y":[146,101,324,57,427,57]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[82,144,139,205,305,301]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[358,218,203,261,236,400]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[133,236,55,212,35,231]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[216,179,382,361,309,212]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[423,189,123,365,202,112]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[262,376,316,200,368,179]},{"type":0,"closed":false,"x":[0,128,256,384,512,640],"y":[56,150,51,369,303,257]}]
-
 	
 		baddies = this.game.add.physicsGroup();
 
@@ -134,7 +137,8 @@ BasicGame.Game.prototype = {
 	//baddies.add(baddy);
 	//
 	//every second spawn a bad guy
-	this.game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, spawnBaddy, this);
+	//console.log(this);
+	this.game.time.events.loop(Phaser.Timer.SECOND * 2, spawnBaddy, this);
 	
 	
 		eBullet = this.game.add.physicsGroup();
@@ -142,6 +146,7 @@ BasicGame.Game.prototype = {
 	//console.log(baddy);
 	//console.log(baddies);
 	//pBullet.add(weapons[0]);
+	player.body.z = 8;
 	},
 
     update: function () {
@@ -230,11 +235,13 @@ BasicGame.Game.prototype = {
 
 
 		//Collisions
+		this.game.physics.arcade.collide(pBullet, baddies, damage, null);
 		this.game.physics.arcade.collide(player, baddies, suicide, null);
 		this.game.physics.arcade.collide(player, eBullet, death, null);
-		this.game.physics.arcade.collide(pBullet, baddies, damage, null);
 
-		//if()
+		baddies.forEach(function(baddy) {
+			baddy.travel();
+		}, this);
     },
 
     quitGame: function (pointer) {

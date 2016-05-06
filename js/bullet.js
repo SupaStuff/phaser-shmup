@@ -14,6 +14,7 @@ var Bullet = function (game, key, group) {
 
         this.tracking = false;
         this.scaleSpeed = 0;
+		console.log(this);
 		game.physics.arcade.enable(this);
 		group.add(this);
     };
@@ -151,7 +152,7 @@ var Bullet = function (game, key, group) {
 	Weapon.SingleLevel.prototype.levelUp = function (newLevel) {
 		var oldLevel = this.shotArray.length;
 		this.shots = newLevel;
-		console.log(this.shotArray[0]);
+		//console.log(this.shotArray[0]);
 		for(var i=0; i < newLevel-oldLevel; i++) this.shotArray.push(new Weapon.SingleBullet(this.shotArray[0].game, this.shotArray[0].group));
 		//this.reset();
 	};
