@@ -19,12 +19,16 @@ BasicGame.Game = function (game) {
     this.particles; //  the particle manager (Phaser.Particles)
     this.physics;   //  the physics manager (Phaser.Physics)
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
+    this.music;
+    this.speech;
+    this.baddyDeathSnd;
+
 	//this.swipe;
 
 
     //  You can use any of these from any function within this State.
     //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
-	
+
 	var platforms;
 	var player;
 	var cursors;
@@ -37,13 +41,15 @@ BasicGame.Game = function (game) {
 	var touchMultiplier;
 	var pBullet;
 	var eBullet;
-	
-	
+
+
 	var baddies;
 	var pathIndex;
 	var paths;
 
 	//var Swipe = require('phaser-swipe');
+
+
 };
 
 BasicGame.Game.prototype = {
@@ -53,7 +59,13 @@ BasicGame.Game.prototype = {
 		//this.swipe = new Swipe(this.game);
 
 		this.pathIndex = 0;
-		
+
+        this.music = this.add.audio('legion');
+        this.speech = this.add.audio('open');
+        this.baddyDeathSnd = this.add.audio('legionDeath');
+
+        this.music.play();
+        this.speech.play();
 	//phaser.io/waveforms is the bomb
 	this.paths = [null,{"type":2,"closed":false,"x":[0,128,256,384,512,1280],"y":[146,101,324,57,427,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[82,144,139,205,305,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[358,218,203,261,236,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[133,236,55,212,35,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[216,179,382,361,309,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[423,189,123,365,202,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[262,376,316,200,368,800]},{"type":0,"closed":false,"x":[0,128,256,384,512,1280],"y":[56,150,51,369,303,800]}]
 
@@ -67,7 +79,7 @@ BasicGame.Game.prototype = {
 		//place the star sprites on the screen
 		var star1 = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'stars1');
 		var star2 = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'stars2');
-		
+
 		//scale to fit
 		star1.scale.setTo(2,2);
 		star2.scale.setTo(2,2);
@@ -76,23 +88,23 @@ BasicGame.Game.prototype = {
 		star1.autoScroll(0, 50);
         star2.autoScroll(0, 200);
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-		
+
 		var size = 64;
 
 	//  We're going to be using physics, so enable the Arcade Physics system
 	this.game.physics.startSystem(Phaser.Physics.ARCADE);
 
-	
+
 	// The player and its settings
 	player = this.game.add.sprite(this.game.world.centerX, this.game.world.height - size/2, 'ship');
 	player.scale.setTo(size/player.width, size/player.height);
 	player.anchor.setTo(0.5, 0.5);
-	
-	
+
+
 	//set up inputs
 	cursors = this.game.input.keyboard.createCursorKeys();
 	btnFire = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
-	
+
 	//testing death by pressing spacebar. Adding a callback and passing it this as context.
 	//btnFire.onDown.add(boom,this);
 
@@ -109,7 +121,7 @@ BasicGame.Game.prototype = {
 
 
 
-	
+
 		pBullet = this.game.add.physicsGroup();
 		pBullet.enableBody = true;
     	pBullet.physicsBodyType = Phaser.Physics.ARCADE;
@@ -127,7 +139,7 @@ BasicGame.Game.prototype = {
 
     //var text = this.game.add.text(0, 0, ":p", style);
     //text.anchor.set(0.5);
-	
+
 		baddies = this.game.add.physicsGroup();
 
 	//var baddy = this.game.add.sprite(this.game.world.centerX, 0, 'baddy');
@@ -139,8 +151,8 @@ BasicGame.Game.prototype = {
 	//every second spawn a bad guy
 	//console.log(this);
 	this.game.time.events.loop(Phaser.Timer.SECOND * 2, spawnBaddy, this);
-	
-	
+
+
 		eBullet = this.game.add.physicsGroup();
 	//this.game.physics.arcade.enable(weapons[0]);
 	//console.log(baddy);
@@ -154,7 +166,7 @@ BasicGame.Game.prototype = {
         //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
 		//play();
 		//  Reset the players velocity (movement)
-		
+
 		//this.game.debug.pointer(this.game.input.mousePointer);
     	//this.game.debug.pointer(this.game.input.pointer1);
 
@@ -203,7 +215,7 @@ BasicGame.Game.prototype = {
 				//  Move to the right
 				player.body.velocity.x = 150;
 			}
-		
+
 			if (cursors.up.isDown)// && player.body.center.y > 0)
 			{
 				//  Move to the right
@@ -219,7 +231,7 @@ BasicGame.Game.prototype = {
 		{
 			player.body.velocity.x = dir.x;
 			player.body.velocity.y = dir.y;
-			
+
 			if(player.body.center.x < 0) player.position.x = 0;
 			else if(player.body.center.x > this.game.world.width) player.position.x = this.game.world.width;
 			if(player.body.center.y < 0) player.position.y = 0;

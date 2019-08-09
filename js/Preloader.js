@@ -33,15 +33,21 @@ BasicGame.Preloader.prototype = {
 		//ship and explosion
 		this.game.load.image('ship', imgdir+'chapel-fighter.png');
 		this.game.load.spritesheet('died', imgdir+'explode.png', 128, 128);
-		
+
 		//background images
 		this.game.load.image('planetbg', imgdir+'planet.jpg');
 		this.game.load.image('stars1', imgdir+'stars1.png');
 		this.game.load.image('stars2', imgdir+'stars2.png');
 		this.load.image('bullet5', imgdir+'bullet5.png');
-		
+
 		//baddies
 		this.game.load.image('baddy', imgdir+'pegasus.gif');
+
+		//music
+		game.load.audio('titleMusic', [snddir+'main_menu.mp3']);
+		game.load.audio('legion', [snddir+'legion.mp3']);
+		game.load.audio('legion_death', [snddir+'legion_dead_sound.wav']);
+		game.load.audio('open', [snddir+'opening_sound_TALK.wav']);
 	},
 
 	create: function () {
@@ -58,10 +64,10 @@ BasicGame.Preloader.prototype = {
 		//	You can jump right into the menu if you want and still play the music, but you'll have a few
 		//	seconds of delay while the mp3 decodes - so if you need your music to be in-sync with your menu
 		//	it's best to wait for it to decode here first, then carry on.
-		
+
 		//	If you don't have any music in your game then put the game.state.start line into the create function and delete
 		//	the update function completely.
-		
+
 		if (this.cache.isSoundDecoded('titleMusic') && this.ready == false)
 		{
 			this.ready = true;
